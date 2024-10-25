@@ -1,0 +1,6 @@
+current_sensor_node:
+  ros__parameters:
+    start_can_id: 0x3C2
+    num_sensors: 10
+    voltage_can_id: 0x000
+    use_timestamp: true

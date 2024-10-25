@@ -1,0 +1,8 @@
+<launch>
+    <node pkg="current_sensor" exec="current_sensor" name="current_sensor" output="screen">
+        <param name="num_sensors" value="10"/>
+        <param name="can_channel" value="vcan0"/>
+        <param name="voltage_unit" value="0.000610352"/>
+        <param name="use_timestamp" value="true"/>
+    </node>
+</launch>
