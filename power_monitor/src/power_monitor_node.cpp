@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "current_sensor.hpp"
+#include "power_monitor.hpp"
 
 static void signal_handler(int signum)
 {

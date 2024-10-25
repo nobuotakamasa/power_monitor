@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>current_sensor</name>
+  <name>power_monitor</name>
   <version>0.0.0</version>
-  <description>current_sensor</description>
-  <maintainer email="akm@isp.co.jp">sample.test</maintainer>
+  <description>power_monitor</description>
+  <maintainer email="nobuo.takamasa@tier4.jp">sample.test</maintainer>
 
   <license>Apache License 2.0</license>
 

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(current_sensor)
+project(power_monitor)
 
 ### Compile options
 if(NOT CMAKE_CXX_STANDARD)
@@ -18,7 +18,7 @@ ament_auto_find_build_dependencies()
 
 # Executable
 ament_auto_add_executable(${PROJECT_NAME}
-  src/current_sensor_node.cpp
+  src/power_monitor_node.cpp
 )
 
 # Test

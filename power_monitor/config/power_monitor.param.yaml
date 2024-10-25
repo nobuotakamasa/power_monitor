@@ -1,4 +1,4 @@
-current_sensor_node:
+power_monitor_node:
   ros__parameters:
     start_can_id: 0x3C2
     num_sensors: 10

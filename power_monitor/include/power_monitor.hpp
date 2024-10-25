@@ -244,7 +244,7 @@ class PowerSensorNode : public CanSensorNode
     SensorPublisher* current_sensor_;
 public:
     PowerSensorNode()
-        : CanSensorNode("current_sensor_node")
+        : CanSensorNode("power_monitor_node")
     {
         openCanInterface();
         voltage_sensor_ = new VoltageSensorPublisher(this);
