@@ -99,14 +99,17 @@ public:
 
 class VoltageSensorPublisher : public SensorPublisher {
     int can_id_;
-    double voltage_unit_;
+    double voltage_unit1_;
+    double voltage_unit2_;
 public:
     VoltageSensorPublisher(rclcpp::Node* node) : SensorPublisher(node){
         node->declare_parameter<int>("voltage_can_id", 0);
         can_id_ = node->get_parameter("voltage_can_id").as_int();
 
-        node->declare_parameter<double>("voltage_unit", 0.001);
-        voltage_unit_ = node->get_parameter("voltage_unit").as_double();
+        node->declare_parameter<double>("voltage_unit1", 0.001);
+        voltage_unit1_ = node->get_parameter("voltage_unit1").as_double();
+        node->declare_parameter<double>("voltage_unit2", 0.001);
+        voltage_unit2_ = node->get_parameter("voltage_unit2").as_double();
 
         publisher_ = node->create_publisher<std_msgs::msg::Float32MultiArray>(TOPIC_PREFIX"/voltages/values", 10);
         if(use_timestamp_) {
@@ -128,8 +131,8 @@ public:
             std::memcpy(&v2, frame.data + 2, sizeof(v2));
             v2 = ntohs(v2);
 
-            float v1_float = static_cast<float>(v1) * voltage_unit_;
-            float v2_float = static_cast<float>(v2) * voltage_unit_;
+            float v1_float = static_cast<float>(v1) * voltage_unit1_;
+            float v2_float = static_cast<float>(v2) * voltage_unit2_;
 
             values_[0] = v1_float;
             values_[1] = v2_float;
