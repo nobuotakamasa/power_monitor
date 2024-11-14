@@ -1,6 +1,6 @@
 <launch>
     <node pkg="power_monitor" exec="power_monitor" name="power_monitor" output="screen">
-        <param name="num_sensors" value="10"/>
+        <param name="num_sensors" value="9"/>
         <param name="can_channel" value="can0"/>
         <param name="voltage_unit1" value="0.000610352"/>
         <param name="voltage_unit2" value="0.000610352"/>
