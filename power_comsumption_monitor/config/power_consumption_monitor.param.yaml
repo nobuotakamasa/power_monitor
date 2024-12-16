@@ -1,0 +1,16 @@
+/**:
+  ros__parameters:
+    period: 5.0
+    #method: perf
+    #method: powercap
+    perf_path: /sys/devices/power
+    powercap_path: /sys/devices/virtual/powercap/intel-rapl
+    powercap_entry:
+      energy_uj: diff
+      constraint_0_name: str
+      constraint_0_max_power_uw: int
+      constraint_0_power_limit_uw: int
+      constraint_0_time_window_us: int
+      constraint_1_name: str
+      constraint_1_power_limit_uw: int
+      constraint_1_time_window_us: int

@@ -1,0 +1,13 @@
+<launch>
+    <arg name="config_file" default="$(find-pkg-share power_consumption_monitor)/config/power_consumption_monitor.param.yaml"/>
+    <arg name="period" default="5.0"/>
+    <arg name="method" default="perf"/>
+
+    <node pkg="power_consumption_monitor" exec="power_consumption_monitor" output="screen">
+        <remap from="~/output/power_consumption_monitor" to="/power_consumption_monitor"/>
+
+        <param from="$(var config_file)"/>
+        <param name="period" value="$(var period)"/>
+        <param name="method" value="$(var method)"/>
+    </node>
+</launch>
