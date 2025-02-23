@@ -22,11 +22,12 @@
 #include <unistd.h>
 #include <vector>
 #include <cstdio>
+#include <string>
 
 #define __DEBUG__ 0
 
 #define TOPIC_PREFIX "/ecu"
-static bool use_timestamp_;
+static bool use_timestamp_ = false;
 
 static inline int64_t toNanoseconds(const struct timeval& tv)
 {
@@ -98,18 +99,21 @@ public:
 };
 
 class VoltageSensorPublisher : public SensorPublisher {
-    int can_id_;
-    double voltage_unit1_;
-    double voltage_unit2_;
+    canid_t can_id_;
+    std::vector<double> voltage_units_;
 public:
     VoltageSensorPublisher(rclcpp::Node* node) : SensorPublisher(node){
         node->declare_parameter<int>("voltage_can_id", 0);
         can_id_ = node->get_parameter("voltage_can_id").as_int();
-
-        node->declare_parameter<double>("voltage_unit1", 0.001);
-        voltage_unit1_ = node->get_parameter("voltage_unit1").as_double();
-        node->declare_parameter<double>("voltage_unit2", 0.001);
-        voltage_unit2_ = node->get_parameter("voltage_unit2").as_double();
+        node->declare_parameter<int>("num_voltages", 2);
+        int num_voltages = node->get_parameter("num_voltages").as_int();
+        voltage_units_.resize(num_voltages);
+        for( int i; i < num_voltages; i++ ) {
+            std::string voltage_unit_name = "voltage_unit"+std::to_string(i);
+            node->declare_parameter<double>(voltage_unit_name, 0.001);
+            voltage_units_[i] = node->get_parameter(voltage_unit_name).as_double();
+            //std::cerr << voltage_unit_name << " " << voltage_units_[i] << "\n";
+        }
 
         publisher_ = node->create_publisher<std_msgs::msg::Float32MultiArray>(TOPIC_PREFIX"/voltages/values", 10);
         if(use_timestamp_) {
@@ -119,7 +123,8 @@ public:
     }
 
     bool publish(const struct can_frame& frame, struct msghdr& msg) override {
-        int canid = frame.can_id;// & 0xffff;//TODO: hack
+        canid_t canid = frame.can_id;// & 0xffff;//TODO: hack
+        auto len = frame.can_dlc;
         //if CAN ID is voltage sensor
         if (canid == can_id_)
         {
@@ -131,8 +136,8 @@ public:
             std::memcpy(&v2, frame.data + 2, sizeof(v2));
             v2 = ntohs(v2);
 
-            float v1_float = static_cast<float>(v1) * voltage_unit1_;
-            float v2_float = static_cast<float>(v2) * voltage_unit2_;
+            float v1_float = static_cast<float>(v1) * voltage_units_[0];
+            float v2_float = static_cast<float>(v2) * voltage_units_[1];
 
             values_[0] = v1_float;
             values_[1] = v2_float;
@@ -151,7 +156,7 @@ public:
 };
 
 class CurrentSensorPublisher : public SensorPublisher {
-    int start_can_id_;
+    canid_t start_can_id_;
     int num_sensors_;
 public:
     CurrentSensorPublisher(rclcpp::Node* node) : SensorPublisher(node) {
@@ -159,7 +164,6 @@ public:
         node->declare_parameter<int>("num_sensors", 9);
         start_can_id_ = node->get_parameter("start_can_id").as_int();
         num_sensors_ = node->get_parameter("num_sensors").as_int();
-
 
         publisher_ = node->create_publisher<std_msgs::msg::Float32MultiArray>(TOPIC_PREFIX"/currents/values", 10);
         if(use_timestamp_) {
@@ -173,9 +177,11 @@ public:
         int sensor_id = frame.can_id - start_can_id_;
         if (0 <= sensor_id && sensor_id < num_sensors_)
         {
-            int32_t value = 0;
-            std::memcpy(&value, frame.data, sizeof(value));
-            value = ntohl(value) - 0x80000000L;
+            uint32_t uvalue = 0;
+            std::memcpy(&uvalue, frame.data, sizeof(uvalue));
+            uvalue = ntohl(uvalue);
+            int64_t value = static_cast<int64_t>(uvalue);
+            value -= 0x80000000UL;
 
             if (!std::isnan(values_[sensor_id])) {
                 publishData();
